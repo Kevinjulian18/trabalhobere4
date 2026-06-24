@@ -368,7 +368,7 @@ void cadastrarUsuario(void)
         printf("│  LOGIN  (8 a 12 caracteres)                  │\n");
         printf("└──────────────────────────────────────────────┘\n");
         printf("➜ Login: ");
-        scanf("%99s", usuario[totalUsuarios].login);
+        scanf(" %99[^\n]", usuario[totalUsuarios].login);
 
         int len = (int)strlen(usuario[totalUsuarios].login);
         if (len < 8 || len > 12)
@@ -385,7 +385,7 @@ void cadastrarUsuario(void)
         printf("│  SENHA  (6 a 8 caracteres)                   │\n");
         printf("└──────────────────────────────────────────────┘\n");
         printf("➜ Senha: ");
-        scanf("%8s", usuario[totalUsuarios].senha);
+        scanf(" %99[^\n]", usuario[totalUsuarios].senha);
 
         int len = (int)strlen(usuario[totalUsuarios].senha);
         if (len < 6 || len > 8)
@@ -432,9 +432,9 @@ int autenticarUsuario(void)
     printf("║           BEREZITA MARKET - LOGIN            ║\n");
     printf("╚══════════════════════════════════════════════╝\n");
     printf("➜ Login: ");
-    scanf("%99s", login);
+    scanf(" %99[^\n]", login);
     printf("➜ Senha: ");
-    scanf("%8s", senha);
+    scanf(" %99[^\n]", senha);
 
     for (int i = 0; i < totalUsuarios; i++)
     {
