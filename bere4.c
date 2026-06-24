@@ -7,22 +7,22 @@
  *  STRUCTS
  * ============================================================ */
 
-/* ---------- Usuário ---------- */
+/* ---------- Usuario ---------- */
 typedef struct
 {
     char login[100]; /* Login: 8 a 12 caracteres */
     char senha[9];   /* Senha: 6 a 8 caracteres  */
-    int  tipo;       /* 1 = Administrador, 2 = Usuário */
+    int  tipo;       /* 1 = Administrador, 2 = Usuario */
 } Usuario;
 
 /* ---------- Cliente ---------- */
 typedef struct
 {
-    int  codigo;           /* Código único gerado automaticamente (a partir de 1000) */
+    int  codigo;           /* Codigo unico gerado automaticamente (a partir de 1000) */
     char nome[100];        /* Nome completo */
-    char nomeSocial[100];  /* Nome social (respeito à diversidade) */
+    char nomeSocial[100];  /* Nome social (respeito a diversidade) */
     char cpf[25];          /* CPF do cliente */
-    char rua[100];         /* Rua e número */
+    char rua[100];         /* Rua e numero */
     char bairro[100];      /* Bairro */
     char celular[100];     /* Celular/WhatsApp */
 } Clientes;
@@ -30,50 +30,57 @@ typedef struct
 /* ---------- Produto ---------- */
 typedef struct
 {
-    int   codigo;          /* Código único gerado automaticamente (a partir de 2000) */
-    char  descricao[100];  /* Descrição do produto */
-    char  categoria[100];  /* Categoria: Alimento, Limpeza, Panificação */
-    float precoCompra;     /* Preço de compra */
+    int   codigo;          /* Codigo unico gerado automaticamente (a partir de 2000) */
+    char  descricao[100];  /* Descricao do produto */
+    char  categoria[100];  /* Categoria: Alimento, Limpeza, Panificacao */
+    float precoCompra;     /* Preco de compra */
     float margemLucro;     /* Margem de lucro em % */
-    float precoVenda;      /* Preço de venda = compra + margem */
+    float precoVenda;      /* Preco de venda = compra + margem */
     int   estoque;         /* Quantidade atual em estoque */
-    int   estoqueMinimo;   /* Quantidade mínima antes do alerta */
+    int   estoqueMinimo;   /* Quantidade minima antes do alerta */
 } Produtos;
 
-/* ---------- Venda (cabeçalho) ---------- */
+/* ---------- Categoria ---------- */
 typedef struct
 {
-    int   numeroVenda;       /* Número único da venda */
-    int   codigoCliente;     /* Código do cliente (0 = sem cliente / Consumidor) */
-    char  nomeCliente[100];  /* Nome do cliente para exibição rápida */
+    int  codigo;          /* Codigo unico gerado automaticamente (a partir de 3000) */
+    char descricao[100];  /* Nome da categoria */
+} Categorias;
+
+/* ---------- Venda (cabecalho) ---------- */
+typedef struct
+{
+    int   numeroVenda;       /* Numero unico da venda */
+    int   codigoCliente;     /* Codigo do cliente (0 = sem cliente / Consumidor) */
+    char  nomeCliente[100];  /* Nome do cliente para exibicao rapida */
     int   dia;               /* Dia da venda */
-    int   mes;               /* Mês da venda */
+    int   mes;               /* Mes da venda */
     int   ano;               /* Ano da venda */
-    float totalVenda;        /* Total final (após desconto) */
+    float totalVenda;        /* Total final (apos desconto) */
 } Vendas;
 
 /* ---------- Item de Venda ---------- */
 typedef struct
 {
-    int   numeroVenda;     /* Número da venda à qual o item pertence */
-    int   codigoProduto;   /* Código do produto vendido */
-    char  descricao[100];  /* Descrição copiada do produto */
-    float precoVenda;      /* Preço de venda no momento da venda */
+    int   numeroVenda;     /* Numero da venda a qual o item pertence */
+    int   codigoProduto;   /* Codigo do produto vendido */
+    char  descricao[100];  /* Descricao copiada do produto */
+    float precoVenda;      /* Preco de venda no momento da venda */
     int   quantidade;      /* Quantidade vendida */
-    float totalItem;       /* quantidade × precoVenda */
+    float totalItem;       /* quantidade  precoVenda */
     char  pagamento;       /* 'a' = Aberto, 'p' = Pago */
 } ItensVenda;
 
 /* ---------- Pagamento ---------- */
 typedef struct
 {
-    int   numeroVenda; /* Número da venda */
+    int   numeroVenda; /* Numero da venda */
     float valorPago;   /* Valor pago neste registro */
-    char  tipo[3];     /* "d"=Dinheiro, "c"=Cartão, "md"=Misto-Dinheiro, "mc"=Misto-Cartão */
+    char  tipo[3];     /* "d"=Dinheiro, "c"=Cartao, "md"=Misto-Dinheiro, "mc"=Misto-Cartao */
 } Pagamentos;
 
 /* ============================================================
- *  VARIÁVEIS GLOBAIS
+ *  VARIAVEIS GLOBAIS
  * ============================================================ */
 
 int usuarioLogado = -1;
@@ -82,6 +89,7 @@ int sistemaLogado = 0;
 int totalUsuarios       = 0;  int capacidadeUsuarios    = 10;
 int totalClientes       = 0;  int capacidadeClientes    = 10;
 int totalProdutos       = 0;  int capacidadeProdutos    = 10;
+int totalCategorias     = 0;  int capacidadeCategorias  = 10;
 int totalVendas         = 0;  int capacidadeVendas      = 10;
 int totalItens          = 0;  int capacidadeItens       = 10;
 int totalPagamentos     = 0;  int capacidadePagamentos  = 10;
@@ -91,6 +99,7 @@ int numeroVendaAtual = 1;
 Usuario    *usuario;
 Clientes   *cliente;
 Produtos   *produto;
+Categorias *categoria;
 Vendas     *venda;
 ItensVenda *item;
 Pagamentos *pagamento;
@@ -104,7 +113,7 @@ float historicoSangrias[50];
 int   totalSangrias = 0;
 
 /* ============================================================
- *  PROTÓTIPOS
+ *  PROTOTIPOS
  * ============================================================ */
 
 float calcularPrecoVenda(float precoCompra, float margemLucro);
@@ -114,7 +123,7 @@ void obterDataAtual(int *dia, int *mes, int *ano);
 int  validarAdmin(void);
 void limparBuffer(void);
 
-/* ---- utilitários de tabela para arquivos .txt ---- */
+/* ---- utilitarios de tabela para arquivos .txt ---- */
 int  maiorEntre(int a, int b);
 int  larguraColunaTexto(const char *valores[], int totalLinhas, int larguraMinima, const char *titulo);
 void escreverLinhaSeparadora(FILE *f, const int *larguras, int totalColunas);
@@ -133,6 +142,10 @@ void relatorios(void);
 
 void cadastrarCliente(void);
 void cadastrarProduto(void);
+void cadastrarCategoria(void);
+void listarCategorias(void);
+int  categoriaExiste(char descricao[]);
+int  selecionarCategoriaProduto(char destino[]);
 
 void listarProdutosVenda(void);
 
@@ -158,6 +171,7 @@ void relatorioFaturamentoPeriodo(void);
 void salvarUsuarios(void);    void carregarUsuarios(void);
 void salvarClientes(void);    void carregarClientes(void);
 void salvarProdutos(void);    void carregarProdutos(void);
+void salvarCategorias(void);  void carregarCategorias(void);
 void salvarVendas(void);      void carregarVendas(void);
 void salvarItens(void);       void carregarItens(void);
 void salvarPagamentos(void);  void carregarPagamentos(void);
@@ -165,7 +179,7 @@ void salvarCaixa(void);       void carregarCaixa(void);
 void carregarTudo(void);      void salvarTudo(void);
 
 /* ============================================================
- *  FUNÇÃO PRINCIPAL
+ *  FUNCAO PRINCIPAL
  * ============================================================ */
 
 int main(void)
@@ -173,11 +187,12 @@ int main(void)
     usuario   = malloc(capacidadeUsuarios   * sizeof(Usuario));
     cliente   = malloc(capacidadeClientes   * sizeof(Clientes));
     produto   = malloc(capacidadeProdutos   * sizeof(Produtos));
+    categoria = malloc(capacidadeCategorias * sizeof(Categorias));
     venda     = malloc(capacidadeVendas     * sizeof(Vendas));
     item      = malloc(capacidadeItens      * sizeof(ItensVenda));
     pagamento = malloc(capacidadePagamentos * sizeof(Pagamentos));
 
-    if (!usuario || !cliente || !produto || !venda || !item || !pagamento)
+    if (!usuario || !cliente || !produto || !categoria || !venda || !item || !pagamento)
     {
         printf("ERRO CRITICO: Falha na alocacao de memoria!\n");
         return 1;
@@ -187,10 +202,10 @@ int main(void)
 
     if (totalUsuarios == 0)
     {
-        printf("\n╔══════════════════════════════════════════════╗\n");
-        printf("║   Nenhum usuario encontrado.                 ║\n");
-        printf("║   Cadastre o primeiro Administrador.         ║\n");
-        printf("╚══════════════════════════════════════════════╝\n");
+        printf("\n+----------------------------------------------+\n");
+        printf("|   Nenhum usuario encontrado.                 |\n");
+        printf("|   Cadastre o primeiro Administrador.         |\n");
+        printf("+----------------------------------------------+\n");
         cadastrarUsuario();
         salvarUsuarios();
     }
@@ -205,6 +220,7 @@ int main(void)
     free(usuario);
     free(cliente);
     free(produto);
+    free(categoria);
     free(venda);
     free(item);
     free(pagamento);
@@ -213,7 +229,7 @@ int main(void)
 }
 
 /* ============================================================
- *  UTILITÁRIOS
+ *  UTILITARIOS
  * ============================================================ */
 
 void obterDataAtual(int *dia, int *mes, int *ano)
@@ -232,25 +248,11 @@ void limparBuffer(void)
         ;
 }
 
-/* ============================================================
- *  UTILITÁRIOS DE TABELA PARA OS ARQUIVOS .TXT
- *
- *  Estas funções permitem que cada arquivo .txt salvo em disco
- *  (usuarios.txt, clientes.txt, produtos.txt, etc.) fique formatado
- *  como uma tabela alinhada, com cabeçalho e bordas, ao invés de
- *  ter um valor por linha "empilhado". A largura de cada coluna se
- *  ajusta automaticamente ao maior valor presente naquela coluna
- *  (ou ao título do cabeçalho, se ele for maior), garantindo que
- *  nada fique cortado e tudo fique sempre alinhado.
- * ============================================================ */
-
 int maiorEntre(int a, int b)
 {
     return (a > b) ? a : b;
 }
 
-/* Calcula a largura ideal de uma coluna de texto, olhando o tamanho
- * de todos os valores que vao aparecer nela e do titulo do cabecalho. */
 int larguraColunaTexto(const char *valores[], int totalLinhas, int larguraMinima, const char *titulo)
 {
     int largura = maiorEntre(larguraMinima, (int)strlen(titulo));
@@ -263,7 +265,6 @@ int larguraColunaTexto(const char *valores[], int totalLinhas, int larguraMinima
     return largura;
 }
 
-/* Escreve uma linha separadora tipo +------------+------------+ */
 void escreverLinhaSeparadora(FILE *f, const int *larguras, int totalColunas)
 {
     fprintf(f, "+");
@@ -276,23 +277,15 @@ void escreverLinhaSeparadora(FILE *f, const int *larguras, int totalColunas)
     fprintf(f, "\n");
 }
 
-/* Escreve uma celula de texto alinhada a esquerda dentro da largura da coluna.
- * Cada chamada escreve "| valor " e quem chama eh responsavel por colocar o
- * "|" final apos a ultima coluna da linha (ver helper escreverFimLinha). */
 void escreverCelulaTexto(FILE *f, const char *valor, int largura)
 {
     fprintf(f, "| %-*s ", largura, valor);
 }
 
-/* Escreve uma celula numerica/ja formatada alinhada a esquerda */
 void escreverCelulaNumero(FILE *f, const char *valorFormatado, int largura)
 {
     fprintf(f, "| %-*s ", largura, valorFormatado);
 }
-
-/* ============================================================
- *  CÁLCULOS
- * ============================================================ */
 
 float calcularPrecoVenda(float precoCompra, float margemLucro)
 {
@@ -306,25 +299,19 @@ float aplicarDesconto(float total, float desconto)
     return total - (total * desconto / 100.0f);
 }
 
-/* ============================================================
- *  VALIDAÇÃO DE ADMINISTRADOR
- * ============================================================ */
-
 int validarAdmin(void)
 {
     if (ehAdministrador())
         return 1;
 
-    printf("\n╔══════════════════════════════════════════════╗\n");
-    printf("║  Operacao restrita a Administradores.        ║\n");
-    printf("║  Informe credenciais de administrador:       ║\n");
-    printf("╚══════════════════════════════════════════════╝\n");
-
     char login[100], senha[9];
+    printf("\n+----------------------------------------------+\n");
+    printf("| Operacao restrita a administradores.         |\n");
+    printf("+----------------------------------------------+\n");
     printf("Login: ");
-    scanf("%99s", login);
+    scanf(" %99[^\n]", login);
     printf("Senha: ");
-    scanf("%8s", senha);
+    scanf(" %8[^\n]", senha);
 
     for (int i = 0; i < totalUsuarios; i++)
     {
@@ -332,18 +319,14 @@ int validarAdmin(void)
             strcmp(usuario[i].senha, senha) == 0 &&
             usuario[i].tipo == 1)
         {
-            printf("\n✔ Acesso liberado!\n");
+            printf("\n[OK] Acesso liberado!\n");
             return 1;
         }
     }
 
-    printf("\n✘ Credenciais invalidas ou usuario nao e administrador!\n");
+    printf("\n[ERRO] Credenciais invalidas ou usuario nao e administrador!\n");
     return 0;
 }
-
-/* ============================================================
- *  USUÁRIOS
- * ============================================================ */
 
 void cadastrarUsuario(void)
 {
@@ -355,41 +338,32 @@ void cadastrarUsuario(void)
         usuario = tmp;
     }
 
-    printf("\n");
-    printf("╔══════════════════════════════════════════════════════════════╗\n");
-    printf("║                     BEREZITA MARKET                          ║\n");
-    printf("╠══════════════════════════════════════════════════════════════╣\n");
-    printf("║                    CADASTRO DE USUARIO                       ║\n");
-    printf("╚══════════════════════════════════════════════════════════════╝\n");
+    printf("\n+--------------------------------------------------------------+\n");
+    printf("|                     CADASTRO DE USUARIO                      |\n");
+    printf("+--------------------------------------------------------------+\n");
 
     do
     {
-        printf("\n┌──────────────────────────────────────────────┐\n");
-        printf("│  LOGIN  (8 a 12 caracteres)                  │\n");
-        printf("└──────────────────────────────────────────────┘\n");
-        printf("➜ Login: ");
+        printf("Login (8 a 12 caracteres): ");
         scanf(" %99[^\n]", usuario[totalUsuarios].login);
 
         int len = (int)strlen(usuario[totalUsuarios].login);
         if (len < 8 || len > 12)
-            printf("✘ Login deve ter entre 8 e 12 caracteres!\n");
+            printf("[ERRO] Login deve ter entre 8 e 12 caracteres!\n");
         else if (loginExiste(usuario[totalUsuarios].login))
-            printf("✘ Esse login ja existe!\n");
+            printf("[ERRO] Esse login ja existe!\n");
         else
             break;
     } while (1);
 
     do
     {
-        printf("\n┌──────────────────────────────────────────────┐\n");
-        printf("│  SENHA  (6 a 8 caracteres)                   │\n");
-        printf("└──────────────────────────────────────────────┘\n");
-        printf("➜ Senha: ");
-        scanf(" %99[^\n]", usuario[totalUsuarios].senha);
+        printf("Senha (6 a 8 caracteres): ");
+        scanf(" %8[^\n]", usuario[totalUsuarios].senha);
 
         int len = (int)strlen(usuario[totalUsuarios].senha);
         if (len < 6 || len > 8)
-            printf("✘ Senha deve ter entre 6 e 8 caracteres!\n");
+            printf("[ERRO] Senha deve ter entre 6 e 8 caracteres!\n");
         else
             break;
     } while (1);
@@ -406,14 +380,12 @@ void cadastrarUsuario(void)
             printf("\nTipo:\n  1 - Administrador\n  2 - Usuario\nEscolha: ");
             scanf("%d", &usuario[totalUsuarios].tipo);
             if (usuario[totalUsuarios].tipo != 1 && usuario[totalUsuarios].tipo != 2)
-                printf("✘ Opcao invalida!\n");
+                printf("[ERRO] Opcao invalida!\n");
         } while (usuario[totalUsuarios].tipo != 1 && usuario[totalUsuarios].tipo != 2);
     }
 
     totalUsuarios++;
-    printf("\n╔══════════════════════════════════════════════╗\n");
-    printf("║      USUARIO CADASTRADO COM SUCESSO!         ║\n");
-    printf("╚══════════════════════════════════════════════╝\n");
+    printf("\n[OK] Usuario cadastrado com sucesso!\n");
     salvarUsuarios();
 }
 
@@ -427,14 +399,13 @@ int autenticarUsuario(void)
 
     char login[100], senha[9];
 
-    printf("\n");
-    printf("╔══════════════════════════════════════════════╗\n");
-    printf("║           BEREZITA MARKET - LOGIN            ║\n");
-    printf("╚══════════════════════════════════════════════╝\n");
-    printf("➜ Login: ");
+    printf("\n+----------------------------------------------+\n");
+    printf("|           BEREZITA MARKET - LOGIN            |\n");
+    printf("+----------------------------------------------+\n");
+    printf("> Login: ");
     scanf(" %99[^\n]", login);
-    printf("➜ Senha: ");
-    scanf(" %99[^\n]", senha);
+    printf("> Senha: ");
+    scanf(" %8[^\n]", senha);
 
     for (int i = 0; i < totalUsuarios; i++)
     {
@@ -444,20 +415,15 @@ int autenticarUsuario(void)
             usuarioLogado = i;
             sistemaLogado = 1;
 
-            printf("\n╔══════════════════════════════════════════════╗\n");
-            printf("║              ACESSO LIBERADO!                ║\n");
-            printf("╚══════════════════════════════════════════════╝\n");
-            printf("\nBem-vindo, %s! Perfil: %s\n",
+            printf("\n[OK] Acesso liberado!\n");
+            printf("Bem-vindo, %s! Perfil: %s\n",
                    usuario[i].login,
                    usuario[i].tipo == 1 ? "Administrador" : "Usuario");
             return 1;
         }
     }
 
-    printf("\n╔══════════════════════════════════════════════╗\n");
-    printf("║              ACESSO NEGADO!                  ║\n");
-    printf("╚══════════════════════════════════════════════╝\n");
-    printf("Login ou senha incorretos!\n");
+    printf("\n[ERRO] Login ou senha incorretos!\n");
     return 0;
 }
 
@@ -475,34 +441,25 @@ int ehAdministrador(void)
     return usuario[usuarioLogado].tipo == 1;
 }
 
-/* ============================================================
- *  MENUS
- * ============================================================ */
-
 void menuPrincipal(void)
 {
     int opcao;
     do
     {
         printf("\n");
-        printf("╔══════════════════════════════════════════════════════════════╗\n");
-        printf("║  ██████╗ ███████╗██████╗ ███████╗███████╗██╗████████╗ █████╗ ║\n");
-        printf("║  ██╔══██╗██╔════╝██╔══██╗██╔════╝╚══███╔╝██║╚══██╔══╝██╔══██╗║\n");
-        printf("║  ██████╔╝█████╗  ██████╔╝█████╗    ███╔╝ ██║   ██║   ███████║║\n");
-        printf("║  ██╔══██╗██╔══╝  ██╔══██╗██╔══╝   ███╔╝  ██║   ██║   ██╔══██║║\n");
-        printf("║  ██████╔╝███████╗██║  ██║███████╗███████╗██║   ██║   ██║  ██║║\n");
-        printf("║  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝   ╚═╝   ╚═╝  ╚═╝║\n");
-        printf("╠══════════════════════════════════════════════════════════════╣\n");
-        printf("║                     MENU PRINCIPAL                           ║\n");
-        printf("╠══════════════════════════════════════════════════════════════╣\n");
-        printf("║  [1] 📁  Cadastros                                           ║\n");
-        printf("║  [2] 🛒  Vendas                                              ║\n");
-        printf("║  [3] 💰  Abertura de Caixa                                   ║\n");
-        printf("║  [4] 📊  Fechamento de Caixa                                 ║\n");
-        printf("║  [5] 📑  Relatorios                                          ║\n");
-        printf("║  [6] 🚪  Sair                                                ║\n");
-        printf("╚══════════════════════════════════════════════════════════════╝\n");
-        printf("➜ Escolha: ");
+        printf("+==============================================================+\n");
+        printf("|                       BEREZITA MARKET                        |\n");
+        printf("+==============================================================+\n");
+        printf("|                     MENU PRINCIPAL                           |\n");
+        printf("+--------------------------------------------------------------+\n");
+        printf("|  [1] Cadastros                                               |\n");
+        printf("|  [2] Vendas                                                  |\n");
+        printf("|  [3] Abertura de Caixa                                       |\n");
+        printf("|  [4] Fechamento de Caixa                                     |\n");
+        printf("|  [5] Relatorios                                              |\n");
+        printf("|  [6] Sair                                                    |\n");
+        printf("+==============================================================+\n");
+        printf("> Escolha: ");
         scanf("%d", &opcao);
 
         switch (opcao)
@@ -532,16 +489,16 @@ void menuCadastros(void)
     do
     {
         printf("\n");
-        printf("╔══════════════════════════════════════╗\n");
-        printf("║          MENU CADASTROS              ║\n");
-        printf("╠══════════════════════════════════════╣\n");
-        printf("║  [1] 👤  Cadastro de Usuarios        ║\n");
-        printf("║  [2] 👥  Cadastro de Clientes        ║\n");
-        printf("║  [3] 📦  Cadastro de Produtos        ║\n");
-        printf("║  [4] 🏷️   Cadastro de Categoria      ║\n");
-        printf("║  [5] ↩️   Retornar ao Menu Principal ║\n");
-        printf("╚══════════════════════════════════════╝\n");
-        printf("➜ Escolha: ");
+        printf("+======================================+\n");
+        printf("|          MENU CADASTROS              |\n");
+        printf("+======================================+\n");
+        printf("|  [1]   Cadastro de Usuarios        |\n");
+        printf("|  [2]   Cadastro de Clientes        |\n");
+        printf("|  [3]   Cadastro de Produtos        |\n");
+        printf("|  [4]    Cadastro de Categoria      |\n");
+        printf("|  [5] <-   Retornar ao Menu Principal |\n");
+        printf("+======================================+\n");
+        printf("> Escolha: ");
         scanf("%d", &opcao);
 
         switch (opcao)
@@ -554,9 +511,7 @@ void menuCadastros(void)
             break;
         case 2: cadastrarCliente(); break;
         case 3: cadastrarProduto(); break;
-        case 4:
-            printf("\nFuncionalidade de categoria em desenvolvimento.\n");
-            break;
+        case 4: cadastrarCategoria(); break;
         case 5: break;
         default:
             printf("\nOpcao invalida!\n");
@@ -571,15 +526,15 @@ void menuVendas(void)
     do
     {
         printf("\n");
-        printf("╔══════════════════════════════════════╗\n");
-        printf("║            MENU VENDAS               ║\n");
-        printf("╠══════════════════════════════════════╣\n");
-        printf("║  [1] 🛒  Nova Venda                  ║\n");
-        printf("║  [2] 💸  Retirada de Caixa (Sangria) ║\n");
-        printf("║  [3] 💳  Pagamento                   ║\n");
-        printf("║  [4] ↩️   Retornar                    ║\n");
-        printf("╚══════════════════════════════════════╝\n");
-        printf("➜ Opcao: ");
+        printf("+======================================+\n");
+        printf("|            MENU VENDAS               |\n");
+        printf("+======================================+\n");
+        printf("|  [1]   Nova Venda                  |\n");
+        printf("|  [2]   Retirada de Caixa (Sangria) |\n");
+        printf("|  [3]   Pagamento                   |\n");
+        printf("|  [4] <-   Retornar                    |\n");
+        printf("+======================================+\n");
+        printf("> Opcao: ");
         scanf("%d", &opcao);
 
         switch (opcao)
@@ -614,9 +569,9 @@ void cadastrarCliente(void)
     cliente[totalClientes].codigo = 1000 + totalClientes;
 
     printf("\n");
-    printf("╔══════════════════════════════════════╗\n");
-    printf("║        CADASTRO DE CLIENTE           ║\n");
-    printf("╚══════════════════════════════════════╝\n");
+    printf("+======================================+\n");
+    printf("|        CADASTRO DE CLIENTE           |\n");
+    printf("+======================================+\n");
     printf("Codigo: %d\n", cliente[totalClientes].codigo);
 
     limparBuffer();
@@ -645,12 +600,113 @@ void cadastrarCliente(void)
     cliente[totalClientes].celular[strcspn(cliente[totalClientes].celular, "\n")] = '\0';
 
     totalClientes++;
-    printf("\n✔ Cliente cadastrado com sucesso!\n");
+    printf("\n[OK] Cliente cadastrado com sucesso!\n");
     salvarClientes();
+}
+
+void listarCategorias(void)
+{
+    printf("\n===== CATEGORIAS CADASTRADAS =====\n");
+    if (totalCategorias == 0)
+    {
+        printf("Nenhuma categoria cadastrada.\n");
+        return;
+    }
+
+    printf("%-8s %-30s\n", "CODIGO", "DESCRICAO");
+    printf("----------------------------------------\n");
+    for (int i = 0; i < totalCategorias; i++)
+        printf("%-8d %-30s\n", categoria[i].codigo, categoria[i].descricao);
+}
+
+int categoriaExiste(char descricao[])
+{
+    for (int i = 0; i < totalCategorias; i++)
+        if (strcmp(categoria[i].descricao, descricao) == 0)
+            return 1;
+    return 0;
+}
+
+void cadastrarCategoria(void)
+{
+    if (totalCategorias == capacidadeCategorias)
+    {
+        capacidadeCategorias *= 2;
+        Categorias *tmp = realloc(categoria, capacidadeCategorias * sizeof(Categorias));
+        if (!tmp) { printf("Erro de memoria!\n"); return; }
+        categoria = tmp;
+    }
+
+    categoria[totalCategorias].codigo = 3000 + totalCategorias;
+
+    printf("\n");
+    printf("========================================\n");
+    printf("          CADASTRO DE CATEGORIA         \n");
+    printf("========================================\n");
+    printf("Codigo: %d\n", categoria[totalCategorias].codigo);
+
+    limparBuffer();
+    do
+    {
+        printf("Descricao da categoria: ");
+        fgets(categoria[totalCategorias].descricao, 100, stdin);
+        categoria[totalCategorias].descricao[strcspn(categoria[totalCategorias].descricao, "\n")] = '\0';
+
+        if (strlen(categoria[totalCategorias].descricao) == 0)
+            printf("Descricao nao pode ficar vazia!\n");
+        else if (categoriaExiste(categoria[totalCategorias].descricao))
+            printf("Esta categoria ja esta cadastrada!\n");
+        else
+            break;
+    } while (1);
+
+    totalCategorias++;
+    printf("\nCategoria cadastrada com sucesso!\n");
+    salvarCategorias();
+}
+
+int selecionarCategoriaProduto(char destino[])
+{
+    if (totalCategorias == 0)
+    {
+        printf("\nNenhuma categoria cadastrada. Cadastre uma categoria antes de cadastrar produtos.\n");
+        return 0;
+    }
+
+    int codigoCategoria;
+    int encontrou = 0;
+
+    do
+    {
+        listarCategorias();
+        printf("\nCodigo da categoria: ");
+        scanf("%d", &codigoCategoria);
+
+        for (int i = 0; i < totalCategorias; i++)
+        {
+            if (categoria[i].codigo == codigoCategoria)
+            {
+                strcpy(destino, categoria[i].descricao);
+                encontrou = 1;
+                break;
+            }
+        }
+
+        if (!encontrou)
+            printf("Categoria nao encontrada. Tente novamente.\n");
+    } while (!encontrou);
+
+    return 1;
 }
 
 void cadastrarProduto(void)
 {
+    if (totalCategorias == 0)
+    {
+        printf("\nCadastre pelo menos uma categoria antes de cadastrar produtos!\n");
+        return;
+    }
+
     if (totalProdutos == capacidadeProdutos)
     {
         capacidadeProdutos *= 2;
@@ -662,9 +718,9 @@ void cadastrarProduto(void)
     produto[totalProdutos].codigo = 2000 + totalProdutos;
 
     printf("\n");
-    printf("╔══════════════════════════════════════╗\n");
-    printf("║        CADASTRO DE PRODUTO           ║\n");
-    printf("╚══════════════════════════════════════╝\n");
+    printf("+======================================+\n");
+    printf("|        CADASTRO DE PRODUTO           |\n");
+    printf("+======================================+\n");
     printf("Codigo: %d\n", produto[totalProdutos].codigo);
 
     limparBuffer();
@@ -672,16 +728,15 @@ void cadastrarProduto(void)
     fgets(produto[totalProdutos].descricao, 100, stdin);
     produto[totalProdutos].descricao[strcspn(produto[totalProdutos].descricao, "\n")] = '\0';
 
-    printf("Categoria (Alimento/Limpeza/Panif.): ");
-    fgets(produto[totalProdutos].categoria, 100, stdin);
-    produto[totalProdutos].categoria[strcspn(produto[totalProdutos].categoria, "\n")] = '\0';
+    if (!selecionarCategoriaProduto(produto[totalProdutos].categoria))
+        return;
 
     do
     {
         printf("Preco de compra                    : R$ ");
         scanf("%f", &produto[totalProdutos].precoCompra);
         if (produto[totalProdutos].precoCompra <= 0.0f)
-            printf("✘ Preco invalido! Deve ser maior que zero.\n");
+            printf("[ERRO] Preco invalido! Deve ser maior que zero.\n");
     } while (produto[totalProdutos].precoCompra <= 0.0f);
 
     do
@@ -689,7 +744,7 @@ void cadastrarProduto(void)
         printf("Margem de lucro (%%)               : ");
         scanf("%f", &produto[totalProdutos].margemLucro);
         if (produto[totalProdutos].margemLucro < 0.0f)
-            printf("✘ Margem invalida! Deve ser >= 0.\n");
+            printf("[ERRO] Margem invalida! Deve ser >= 0.\n");
     } while (produto[totalProdutos].margemLucro < 0.0f);
 
     produto[totalProdutos].precoVenda = calcularPrecoVenda(
@@ -702,14 +757,14 @@ void cadastrarProduto(void)
         printf("Estoque atual                      : ");
         scanf("%d", &produto[totalProdutos].estoque);
         if (produto[totalProdutos].estoque < 0)
-            printf("✘ Estoque invalido! Deve ser >= 0.\n");
+            printf("[ERRO] Estoque invalido! Deve ser >= 0.\n");
     } while (produto[totalProdutos].estoque < 0);
 
     printf("Estoque minimo                     : ");
     scanf("%d", &produto[totalProdutos].estoqueMinimo);
 
     totalProdutos++;
-    printf("\n✔ Produto cadastrado com sucesso!\n");
+    printf("\n[OK] Produto cadastrado com sucesso!\n");
     salvarProdutos();
 }
 
@@ -720,32 +775,32 @@ void cadastrarProduto(void)
 void listarProdutosVenda(void)
 {
     printf("\n");
-    printf("╔══════════╦══════════════════════╦══════════════════════╦════════════╦══════════╗\n");
-    printf("║  CODIGO  ║      DESCRICAO       ║      CATEGORIA       ║   PRECO    ║ ESTOQUE  ║\n");
-    printf("╠══════════╬══════════════════════╬══════════════════════╬════════════╬══════════╣\n");
+    printf("+==========+======================+======================+============+==========+\n");
+    printf("|  CODIGO  |      DESCRICAO       |      CATEGORIA       |   PRECO    | ESTOQUE  |\n");
+    printf("+==========+======================+======================+============+==========+\n");
     for (int i = 0; i < totalProdutos; i++)
     {
-        printf("║ %-8d ║ %-20s ║ %-20s ║ R$%-7.2f ║ %-8d ║\n",
+        printf("| %-8d | %-20s | %-20s | R$%-7.2f | %-8d |\n",
                produto[i].codigo,
                produto[i].descricao,
                produto[i].categoria,
                produto[i].precoVenda,
                produto[i].estoque);
     }
-    printf("╚══════════╩══════════════════════╩══════════════════════╩════════════╩══════════╝\n");
+    printf("+==========+======================+======================+============+==========+\n");
 }
 
 void novaVenda(void)
 {
     if (caixaAberto == 0)
     {
-        printf("\n✘ Abra o caixa primeiro!\n");
+        printf("\n[ERRO] Abra o caixa primeiro!\n");
         return;
     }
 
     if (totalProdutos == 0)
     {
-        printf("\n✘ Nao existem produtos cadastrados!\n");
+        printf("\n[ERRO] Nao existem produtos cadastrados!\n");
         return;
     }
 
@@ -801,7 +856,7 @@ void novaVenda(void)
 
             if (produto[i].estoque == 0)
             {
-                printf("\n⚠ ALERTA: Produto '%s' sem estoque! Nao e possivel vender.\n",
+                printf("\n[ATENCAO] ALERTA: Produto '%s' sem estoque! Nao e possivel vender.\n",
                        produto[i].descricao);
                 break;
             }
@@ -812,14 +867,14 @@ void novaVenda(void)
 
             if (quantidade <= 0)
             {
-                printf("✘ Quantidade invalida!\n");
+                printf("[ERRO] Quantidade invalida!\n");
                 break;
             }
 
             if (quantidade > produto[i].estoque)
             {
                 char continuar;
-                printf("\n⚠ Voce deseja vender %d produto(s). Ha somente %d em estoque! Continuar (s/n)? ",
+                printf("\n[ATENCAO] Voce deseja vender %d produto(s). Ha somente %d em estoque! Continuar (s/n)? ",
                        quantidade, produto[i].estoque);
                 scanf(" %c", &continuar);
                 if (continuar != 's' && continuar != 'S')
@@ -830,7 +885,7 @@ void novaVenda(void)
             produto[i].estoque -= quantidade;
 
             if (produto[i].estoque <= produto[i].estoqueMinimo)
-                printf("\n⚠ ALERTA: Estoque minimo atingido para '%s'!\n", produto[i].descricao);
+                printf("\n[ATENCAO] ALERTA: Estoque minimo atingido para '%s'!\n", produto[i].descricao);
 
             if (totalItens == capacidadeItens)
             {
@@ -857,7 +912,7 @@ void novaVenda(void)
         }
 
         if (!encontrou)
-            printf("✘ Produto nao encontrado!\n");
+            printf("[ERRO] Produto nao encontrado!\n");
 
         printf("Novo item no carrinho? (s/n): ");
         scanf(" %c", &resposta);
@@ -871,18 +926,18 @@ void novaVenda(void)
     }
 
     printf("\n");
-    printf("╔══════════╦══════════════════════╦════════════╦══════╦════════════╗\n");
-    printf("║  CODIGO  ║      DESCRICAO       ║   PRECO    ║ QTD  ║   TOTAL    ║\n");
-    printf("╠══════════╬══════════════════════╬════════════╬══════╬════════════╣\n");
+    printf("+==========+======================+============+======+============+\n");
+    printf("|  CODIGO  |      DESCRICAO       |   PRECO    | QTD  |   TOTAL    |\n");
+    printf("+==========+======================+============+======+============+\n");
     for (int i = inicioItens; i < totalItens; i++)
     {
-        printf("║ %-8d ║ %-20s ║ R$%-7.2f ║ %-4d ║ R$%-7.2f ║\n",
+        printf("| %-8d | %-20s | R$%-7.2f | %-4d | R$%-7.2f |\n",
                item[i].codigoProduto, item[i].descricao,
                item[i].precoVenda, item[i].quantidade, item[i].totalItem);
     }
-    printf("╠══════════╩══════════════════════╩════════════╩══════╩════════════╣\n");
-    printf("║                                Total carrinho: R$ %-12.2f ║\n", totalCarrinho);
-    printf("╚══════════════════════════════════════════════════════════════════╝\n");
+    printf("+==========+======================+============+======+============+\n");
+    printf("|                                Total carrinho: R$ %-12.2f |\n", totalCarrinho);
+    printf("+==================================================================+\n");
 
     float desconto;
     printf("\nHa desconto? Informe 0 (para nao) ou %% concedido: ");
@@ -893,14 +948,14 @@ void novaVenda(void)
     int pago = 0;
     while (!pago)
     {
-        printf("\n╔══════════════════════════════╗\n");
-        printf("║         PAGAMENTO            ║\n");
-        printf("╠══════════════════════════════╣\n");
-        printf("║  [1] 💳 Pagamento no Cartao  ║\n");
-        printf("║  [2] 💵 Pagamento em Dinheiro║\n");
-        printf("║  [3] ↩️  Cancelar Venda       ║\n");
-        printf("╚══════════════════════════════╝\n");
-        printf("➜ Opcao: ");
+        printf("\n+==============================+\n");
+        printf("|         PAGAMENTO            |\n");
+        printf("+==============================+\n");
+        printf("|  [1]  Pagamento no Cartao  |\n");
+        printf("|  [2]  Pagamento em Dinheiro|\n");
+        printf("|  [3] <-  Cancelar Venda       |\n");
+        printf("+==============================+\n");
+        printf("> Opcao: ");
 
         int formaPagamento;
         scanf("%d", &formaPagamento);
@@ -968,7 +1023,7 @@ void novaVenda(void)
                         for (int i = inicioItens; i < totalItens; i++)
                             item[i].pagamento = 'p';
                         pago = 1;
-                        printf("\n✔ Pagamento misto realizado com sucesso!\n");
+                        printf("\n[OK] Pagamento misto realizado com sucesso!\n");
                     }
                     else
                     {
@@ -991,7 +1046,7 @@ void novaVenda(void)
                 for (int i = inicioItens; i < totalItens; i++)
                     item[i].pagamento = 'p';
                 pago = 1;
-                printf("\n✔ Pagamento em dinheiro realizado!\n");
+                printf("\n[OK] Pagamento em dinheiro realizado!\n");
             }
         }
 
@@ -1012,7 +1067,7 @@ void novaVenda(void)
                 for (int i = inicioItens; i < totalItens; i++)
                     item[i].pagamento = 'p';
                 pago = 1;
-                printf("\n✔ Pagamento no cartao realizado!\n");
+                printf("\n[OK] Pagamento no cartao realizado!\n");
             }
             else
             {
@@ -1061,11 +1116,11 @@ void novaVenda(void)
                             for (int i = inicioItens; i < totalItens; i++)
                                 item[i].pagamento = 'p';
                             pago = 1;
-                            printf("\n✔ Pagamento misto realizado!\n");
+                            printf("\n[OK] Pagamento misto realizado!\n");
                         }
                         else
                         {
-                            printf("✘ Valor em dinheiro insuficiente!\n");
+                            printf("[ERRO] Valor em dinheiro insuficiente!\n");
                         }
                     }
                     else if (valorCartao == 0.0f)
@@ -1088,16 +1143,16 @@ void novaVenda(void)
                             for (int i = inicioItens; i < totalItens; i++)
                                 item[i].pagamento = 'p';
                             pago = 1;
-                            printf("\n✔ Pagamento em dinheiro realizado!\n");
+                            printf("\n[OK] Pagamento em dinheiro realizado!\n");
                         }
                         else
                         {
-                            printf("✘ Valor insuficiente!\n");
+                            printf("[ERRO] Valor insuficiente!\n");
                         }
                     }
                     else
                     {
-                        printf("✘ Valor invalido!\n");
+                        printf("[ERRO] Valor invalido!\n");
                     }
                 }
                 else
@@ -1125,7 +1180,7 @@ void novaVenda(void)
     venda[totalVendas].totalVenda = totalFinal;
     totalVendas++;
 
-    printf("\n✔ Venda #%d realizada com sucesso! Cliente: %s\n",
+    printf("\n[OK] Venda #%d realizada com sucesso! Cliente: %s\n",
            numeroVendaAtual, nomeCliente);
 
     numeroVendaAtual++;
@@ -1162,7 +1217,7 @@ void pagarVendaAberta(void)
 
     if (totalVendasAbertas == 0)
     {
-        printf("\n✔ Nao ha vendas em aberto!\n");
+        printf("\n[OK] Nao ha vendas em aberto!\n");
         return;
     }
 
@@ -1201,7 +1256,7 @@ void pagarVendaAberta(void)
 
     if (!encontrou)
     {
-        printf("✘ Venda nao encontrada ou ja paga!\n");
+        printf("[ERRO] Venda nao encontrada ou ja paga!\n");
         return;
     }
 
@@ -1238,7 +1293,7 @@ void pagarVendaAberta(void)
                     if (item[i].numeroVenda == numPagar && item[i].pagamento == 'a')
                         item[i].pagamento = 'p';
                 faturamento += totalAberto;
-                printf("\n✔ Venda #%d paga com sucesso!\n", numPagar);
+                printf("\n[OK] Venda #%d paga com sucesso!\n", numPagar);
                 pago = 1;
             }
             else
@@ -1267,12 +1322,12 @@ void pagarVendaAberta(void)
                         item[i].pagamento = 'p';
                 caixaAtual  += totalAberto;
                 faturamento += totalAberto;
-                printf("\n✔ Venda #%d paga com sucesso!\n", numPagar);
+                printf("\n[OK] Venda #%d paga com sucesso!\n", numPagar);
                 pago = 1;
             }
             else
             {
-                printf("✘ Valor insuficiente!\n");
+                printf("[ERRO] Valor insuficiente!\n");
             }
         }
     }
@@ -1290,7 +1345,7 @@ void abrirCaixa(void)
 {
     if (caixaAberto == 1)
     {
-        printf("\n✘ Caixa ja esta aberto!\n");
+        printf("\n[ERRO] Caixa ja esta aberto!\n");
         return;
     }
 
@@ -1299,12 +1354,12 @@ void abrirCaixa(void)
         printf("\nValor de abertura do caixa: R$ ");
         scanf("%f", &caixaInicial);
         if (caixaInicial < 0.0f)
-            printf("✘ Valor invalido! Deve ser >= 0.\n");
+            printf("[ERRO] Valor invalido! Deve ser >= 0.\n");
     } while (caixaInicial < 0.0f);
 
     caixaAtual  = caixaInicial;
     caixaAberto = 1;
-    printf("\n✔ Caixa aberto com R$ %.2f!\n", caixaInicial);
+    printf("\n[OK] Caixa aberto com R$ %.2f!\n", caixaInicial);
     salvarCaixa();
 }
 
@@ -1312,7 +1367,7 @@ void fecharCaixa(void)
 {
     if (caixaAberto == 0)
     {
-        printf("\n✘ Caixa nao esta aberto!\n");
+        printf("\n[ERRO] Caixa nao esta aberto!\n");
         return;
     }
 
@@ -1336,40 +1391,40 @@ void fecharCaixa(void)
     float ajuste = faturamento - caixaInicial - pagoD - pagoMd - pagoC - pagoMc;
 
     printf("\n");
-    printf("╔════════════════════════════════════════════╗\n");
-    printf("║      FECHAMENTO DE CAIXA - RESUMO         ║\n");
-    printf("╠════════════════════════════════════════════╣\n");
-    printf("║  Qtd. vendas realizadas : %-17d║\n", totalVendas);
-    printf("║  Faturamento total      : R$ %-14.2f║\n", faturamento);
-    printf("║  Valor de abertura      : R$ %-14.2f║\n", caixaInicial);
-    printf("║  Pago em dinheiro  (d)  : R$ %-14.2f║\n", pagoD);
-    printf("║  Pago misto din.   (md) : R$ %-14.2f║\n", pagoMd);
-    printf("║  Pago em cartao    (c)  : R$ %-14.2f║\n", pagoC);
-    printf("║  Pago misto cart.  (mc) : R$ %-14.2f║\n", pagoMc);
-    printf("║  Total sangrias         : R$ %-14.2f║\n", totalSangriasValor);
-    printf("║  Caixa fisico atual     : R$ %-14.2f║\n", caixaAtual);
-    printf("╠════════════════════════════════════════════╣\n");
+    printf("+============================================+\n");
+    printf("|      FECHAMENTO DE CAIXA - RESUMO         |\n");
+    printf("+============================================+\n");
+    printf("|  Qtd. vendas realizadas : %-17d|\n", totalVendas);
+    printf("|  Faturamento total      : R$ %-14.2f|\n", faturamento);
+    printf("|  Valor de abertura      : R$ %-14.2f|\n", caixaInicial);
+    printf("|  Pago em dinheiro  (d)  : R$ %-14.2f|\n", pagoD);
+    printf("|  Pago misto din.   (md) : R$ %-14.2f|\n", pagoMd);
+    printf("|  Pago em cartao    (c)  : R$ %-14.2f|\n", pagoC);
+    printf("|  Pago misto cart.  (mc) : R$ %-14.2f|\n", pagoMc);
+    printf("|  Total sangrias         : R$ %-14.2f|\n", totalSangriasValor);
+    printf("|  Caixa fisico atual     : R$ %-14.2f|\n", caixaAtual);
+    printf("+============================================+\n");
 
     if (ajuste > 0.01f || ajuste < -0.01f)
     {
-        printf("║  AJUSTE (divergencia)   : R$ %-14.2f║\n", ajuste);
-        printf("╠════════════════════════════════════════════╣\n");
-        printf("║  ⚠ ATENCAO: O caixa nao pode ser fechado  ║\n");
-        printf("║  porque ha divergencia de valores!         ║\n");
+        printf("|  AJUSTE (divergencia)   : R$ %-14.2f|\n", ajuste);
+        printf("+============================================+\n");
+        printf("|  [ATENCAO] ATENCAO: O caixa nao pode ser fechado  |\n");
+        printf("|  porque ha divergencia de valores!         |\n");
         if (ajuste > 0.0f)
-            printf("║  Situacao: SOBRA de R$ %-20.2f║\n", ajuste);
+            printf("|  Situacao: SOBRA de R$ %-20.2f|\n", ajuste);
         else
-            printf("║  Situacao: FALTA de R$ %-20.2f║\n", -ajuste);
-        printf("╚════════════════════════════════════════════╝\n");
+            printf("|  Situacao: FALTA de R$ %-20.2f|\n", -ajuste);
+        printf("+============================================+\n");
         caixaAberto = 0;
         salvarCaixa();
     }
     else
     {
-        printf("║  AJUSTE                 : R$ %-14.2f║\n", ajuste);
-        printf("╠════════════════════════════════════════════╣\n");
-        printf("║  ✔ Caixa fechado corretamente!            ║\n");
-        printf("╚════════════════════════════════════════════╝\n");
+        printf("|  AJUSTE                 : R$ %-14.2f|\n", ajuste);
+        printf("+============================================+\n");
+        printf("|  [OK] Caixa fechado corretamente!            |\n");
+        printf("+============================================+\n");
         caixaAberto = 0;
         salvarCaixa();
     }
@@ -1383,7 +1438,7 @@ void sangria(void)
 {
     if (caixaAberto == 0)
     {
-        printf("\n✘ Abra o caixa primeiro!\n");
+        printf("\n[ERRO] Abra o caixa primeiro!\n");
         return;
     }
 
@@ -1405,12 +1460,12 @@ void sangria(void)
 
     if (retirada <= 0.0f)
     {
-        printf("✘ Valor invalido! A retirada deve ser maior que zero.\n");
+        printf("[ERRO] Valor invalido! A retirada deve ser maior que zero.\n");
         return;
     }
     if ((totalDinheiro - retirada) < 50.0f)
     {
-        printf("✘ Retirada invalida! Deve sobrar no minimo R$ 50,00 no caixa.\n");
+        printf("[ERRO] Retirada invalida! Deve sobrar no minimo R$ 50,00 no caixa.\n");
         printf("  Maximo permitido para retirada: R$ %.2f\n", totalDinheiro - 50.0f);
         return;
     }
@@ -1424,10 +1479,10 @@ void sangria(void)
     }
     else
     {
-        printf("⚠ Limite de 50 sangrias atingido. Retirada realizada mas nao registrada no historico.\n");
+        printf("[ATENCAO] Limite de 50 sangrias atingido. Retirada realizada mas nao registrada no historico.\n");
     }
 
-    printf("\n✔ Sangria de R$ %.2f realizada com sucesso!\n", retirada);
+    printf("\n[OK] Sangria de R$ %.2f realizada com sucesso!\n", retirada);
     printf("Saldo atual no caixa: R$ %.2f\n", caixaAtual);
     salvarCaixa();
 }
@@ -1446,12 +1501,12 @@ void listarSangrias(void)
         printf("Sangria %d: R$ %.2f\n", i + 1, historicoSangrias[i]);
         totalRetirado += historicoSangrias[i];
     }
-    printf("─────────────────────────────────\n");
+    printf("---------------------------------\n");
     printf("Total retirado: R$ %.2f\n", totalRetirado);
 }
 
 /* ============================================================
- *  RELATÓRIOS
+ *  RELATORIOS
  * ============================================================ */
 
 void relatorios(void)
@@ -1460,16 +1515,16 @@ void relatorios(void)
     do
     {
         printf("\n");
-        printf("╔══════════════════════════════════════════════╗\n");
-        printf("║           CENTRAL DE RELATORIOS             ║\n");
-        printf("╠══════════════════════════════════════════════╣\n");
-        printf("║  [1] 👥  Relatorio de Clientes              ║\n");
-        printf("║  [2] 📦  Relatorio de Produtos              ║\n");
-        printf("║  [3] 🛒  Relatorio de Vendas                ║\n");
-        printf("║  [4] 💸  Historico de Sangrias              ║\n");
-        printf("║  [5] ↩️   Retornar                           ║\n");
-        printf("╚══════════════════════════════════════════════╝\n");
-        printf("➜ Opcao: ");
+        printf("+==============================================+\n");
+        printf("|           CENTRAL DE RELATORIOS             |\n");
+        printf("+==============================================+\n");
+        printf("|  [1]   Relatorio de Clientes              |\n");
+        printf("|  [2]   Relatorio de Produtos              |\n");
+        printf("|  [3]   Relatorio de Vendas                |\n");
+        printf("|  [4]   Historico de Sangrias              |\n");
+        printf("|  [5] <-   Retornar                           |\n");
+        printf("+==============================================+\n");
+        printf("> Opcao: ");
         scanf("%d", &opcao);
 
         switch (opcao)
@@ -1512,18 +1567,18 @@ void relatorioClientesOrdenado(void)
             }
 
     printf("\n");
-    printf("╔══════════════════════════════════════════════════════════════════════════╗\n");
-    printf("║                 CLIENTES (ORDEM ALFABETICA)                             ║\n");
-    printf("╠═══════╦════════════════════════════╦═══════════════╦═══════════════════╣\n");
-    printf("║ COD.  ║ NOME                       ║ CPF           ║ CELULAR           ║\n");
-    printf("╠═══════╬════════════════════════════╬═══════════════╬═══════════════════╣\n");
+    printf("+==========================================================================+\n");
+    printf("|                 CLIENTES (ORDEM ALFABETICA)                             |\n");
+    printf("+=======+============================+===============+===================+\n");
+    printf("| COD.  | NOME                       | CPF           | CELULAR           |\n");
+    printf("+=======+============================+===============+===================+\n");
     for (int i = 0; i < totalClientes; i++)
     {
         int k = indices[i];
-        printf("║ %-5d ║ %-26s ║ %-13s ║ %-17s ║\n",
+        printf("| %-5d | %-26s | %-13s | %-17s |\n",
                cliente[k].codigo, cliente[k].nome, cliente[k].cpf, cliente[k].celular);
     }
-    printf("╚═══════╩════════════════════════════╩═══════════════╩═══════════════════╝\n");
+    printf("+=======+============================+===============+===================+\n");
 }
 
 void relatorioClientesPeriodo(void)
@@ -1585,17 +1640,17 @@ void relatorioProdutosOrdenado(void)
             }
 
     printf("\n");
-    printf("╔════════╦════════════════════════╦══════════════════╦════════════╦═════════╗\n");
-    printf("║ CODIGO ║ DESCRICAO              ║ CATEGORIA        ║   PRECO    ║ ESTOQUE ║\n");
-    printf("╠════════╬════════════════════════╬══════════════════╬════════════╬═════════╣\n");
+    printf("+========+========================+==================+============+=========+\n");
+    printf("| CODIGO | DESCRICAO              | CATEGORIA        |   PRECO    | ESTOQUE |\n");
+    printf("+========+========================+==================+============+=========+\n");
     for (int i = 0; i < totalProdutos; i++)
     {
         int k = indices[i];
-        printf("║ %-6d ║ %-22s ║ %-16s ║ R$%-7.2f ║ %-7d ║\n",
+        printf("| %-6d | %-22s | %-16s | R$%-7.2f | %-7d |\n",
                produto[k].codigo, produto[k].descricao, produto[k].categoria,
                produto[k].precoVenda, produto[k].estoque);
     }
-    printf("╚════════╩════════════════════════╩══════════════════╩════════════╩═════════╝\n");
+    printf("+========+========================+==================+============+=========+\n");
 }
 
 void relatorioProdutosEstoqueMinimo(void)
@@ -1623,7 +1678,7 @@ void relatorioProdutosEstoqueMinimo(void)
             }
 
     printf("%-8s %-24s %8s %8s %s\n", "CODIGO", "DESCRICAO", "ESTOQUE", "MINIMO", "STATUS");
-    printf("──────────────────────────────────────────────────────────────\n");
+    printf("--------------------------------------------------------------\n");
     for (int i = 0; i < total; i++)
     {
         int k = indices[i];
@@ -1679,7 +1734,7 @@ void relatorioProdutosMaisVendidos(void)
 
     printf("\n===== PRODUTOS MAIS VENDIDOS NO PERIODO =====\n");
     printf("%-24s %12s\n", "DESCRICAO", "QTD VENDIDA");
-    printf("────────────────────────────────────────\n");
+    printf("----------------------------------------\n");
     int algum = 0;
     for (int i = 0; i < totalProdutos; i++)
     {
@@ -1726,7 +1781,7 @@ void relatorioVendasPeriodo(void)
 
         for (int k = 0; k < totalItens; k++)
             if (item[k].numeroVenda == venda[i].numeroVenda)
-                printf("   → %-20s | Qtd: %d | R$ %.2f\n",
+                printf("   -> %-20s | Qtd: %d | R$ %.2f\n",
                        item[k].descricao, item[k].quantidade, item[k].totalItem);
 
         totalPeriodo += venda[i].totalVenda;
@@ -1737,7 +1792,7 @@ void relatorioVendasPeriodo(void)
         printf("Nenhuma venda no periodo.\n");
     else
     {
-        printf("\n──────────────────────────────────────────\n");
+        printf("\n------------------------------------------\n");
         printf("Total faturado no periodo: R$ %.2f\n", totalPeriodo);
     }
 }
@@ -1771,23 +1826,23 @@ void relatorioFaturamentoPeriodo(void)
     }
 
     printf("\n");
-    printf("╔════════════════════════════════════════════╗\n");
-    printf("║       FATURAMENTO CONSOLIDADO              ║\n");
-    printf("╠════════════════════════════════════════════╣\n");
-    printf("║  Dinheiro puro          : R$ %-14.2f║\n", totalD);
-    printf("║  Misto (parte dinheiro) : R$ %-14.2f║\n", totalMd);
-    printf("║  TOTAL EM DINHEIRO      : R$ %-14.2f║\n", totalD + totalMd);
-    printf("╠════════════════════════════════════════════╣\n");
-    printf("║  Cartao puro            : R$ %-14.2f║\n", totalC);
-    printf("║  Misto (parte cartao)   : R$ %-14.2f║\n", totalMc);
-    printf("║  TOTAL EM CARTAO        : R$ %-14.2f║\n", totalC + totalMc);
-    printf("╠════════════════════════════════════════════╣\n");
-    printf("║  TOTAL GERAL            : R$ %-14.2f║\n", totalD + totalMd + totalC + totalMc);
-    printf("╚════════════════════════════════════════════╝\n");
+    printf("+============================================+\n");
+    printf("|       FATURAMENTO CONSOLIDADO              |\n");
+    printf("+============================================+\n");
+    printf("|  Dinheiro puro          : R$ %-14.2f|\n", totalD);
+    printf("|  Misto (parte dinheiro) : R$ %-14.2f|\n", totalMd);
+    printf("|  TOTAL EM DINHEIRO      : R$ %-14.2f|\n", totalD + totalMd);
+    printf("+============================================+\n");
+    printf("|  Cartao puro            : R$ %-14.2f|\n", totalC);
+    printf("|  Misto (parte cartao)   : R$ %-14.2f|\n", totalMc);
+    printf("|  TOTAL EM CARTAO        : R$ %-14.2f|\n", totalC + totalMc);
+    printf("+============================================+\n");
+    printf("|  TOTAL GERAL            : R$ %-14.2f|\n", totalD + totalMd + totalC + totalMc);
+    printf("+============================================+\n");
 }
 
 /* ============================================================
- *  PERSISTÊNCIA EM ARQUIVO TEXTO (.txt) — FORMATO TABELA
+ *  PERSISTENCIA EM ARQUIVO TEXTO (.txt)  FORMATO TABELA
  *
  *  Cada arquivo .txt agora e gravado como uma TABELA alinhada,
  *  com cabecalho e bordas, no estilo:
@@ -1806,7 +1861,7 @@ void relatorioFaturamentoPeriodo(void)
  *  (+----+) e cabecalho, lendo somente as linhas de dados.
  * ============================================================ */
 
-/* ---------- Usuários ---------- */
+/* ---------- Usuarios ---------- */
 
 /*
  * Salva usuarios em "usuarios.txt" em formato de tabela.
@@ -2083,6 +2138,115 @@ void carregarClientes(void)
     fclose(f);
 }
 
+/* ---------- Categorias ---------- */
+
+void salvarCategorias(void)
+{
+    FILE *f = fopen("categorias.txt", "w");
+    if (!f) { printf("Erro ao salvar categorias!\n"); return; }
+
+    fprintf(f, "%d\n", totalCategorias);
+
+    if (totalCategorias == 0)
+    {
+        fprintf(f, "(Nenhuma categoria cadastrada)\n");
+        fclose(f);
+        return;
+    }
+
+    char codigosTexto[totalCategorias][16];
+    const char *codigosPtr[totalCategorias];
+    const char *descricoesPtr[totalCategorias];
+
+    for (int i = 0; i < totalCategorias; i++)
+    {
+        sprintf(codigosTexto[i], "%d", categoria[i].codigo);
+        codigosPtr[i] = codigosTexto[i];
+        descricoesPtr[i] = categoria[i].descricao;
+    }
+
+    int lgCodigo = larguraColunaTexto(codigosPtr, totalCategorias, 6, "CODIGO");
+    int lgDesc   = larguraColunaTexto(descricoesPtr, totalCategorias, 20, "DESCRICAO");
+
+    int larguras[2] = { lgCodigo, lgDesc };
+
+    escreverLinhaSeparadora(f, larguras, 2);
+    escreverCelulaTexto(f, "CODIGO", lgCodigo);
+    escreverCelulaTexto(f, "DESCRICAO", lgDesc);
+    fprintf(f, "|\n");
+    escreverLinhaSeparadora(f, larguras, 2);
+
+    for (int i = 0; i < totalCategorias; i++)
+    {
+        escreverCelulaTexto(f, codigosPtr[i], lgCodigo);
+        escreverCelulaTexto(f, descricoesPtr[i], lgDesc);
+        fprintf(f, "|\n");
+    }
+    escreverLinhaSeparadora(f, larguras, 2);
+
+    fclose(f);
+}
+
+void carregarCategorias(void)
+{
+    FILE *f = fopen("categorias.txt", "r");
+    if (!f) return;
+
+    fscanf(f, "%d\n", &totalCategorias);
+
+    if (totalCategorias == 0)
+    {
+        fclose(f);
+        return;
+    }
+
+    if (totalCategorias > capacidadeCategorias)
+    {
+        capacidadeCategorias = totalCategorias * 2;
+        Categorias *tmp = realloc(categoria, capacidadeCategorias * sizeof(Categorias));
+        if (tmp) categoria = tmp;
+    }
+
+    char linha[1024];
+    int  lidos = 0;
+
+    while (lidos < totalCategorias && fgets(linha, sizeof(linha), f))
+    {
+        if (linha[0] != '|')
+            continue;
+        if (strstr(linha, "CODIGO") != NULL)
+            continue;
+
+        char campos[2][100];
+        for (int c = 0; c < 2; c++) campos[c][0] = '\0';
+
+        char *campo = strtok(linha, "|");
+        int   col   = 0;
+        while (campo != NULL && col < 2)
+        {
+            while (*campo == ' ') campo++;
+            int len = (int)strlen(campo);
+            while (len > 0 && (campo[len-1] == ' ' || campo[len-1] == '\n' || campo[len-1] == '\r'))
+            {
+                campo[len-1] = '\0';
+                len--;
+            }
+            strncpy(campos[col], campo, sizeof(campos[col]) - 1);
+
+            campo = strtok(NULL, "|");
+            col++;
+        }
+
+        categoria[lidos].codigo = atoi(campos[0]);
+        strcpy(categoria[lidos].descricao, campos[1]);
+
+        lidos++;
+    }
+
+    totalCategorias = lidos;
+    fclose(f);
+}
+
 /* ---------- Produtos ---------- */
 
 /*
@@ -2258,10 +2422,10 @@ void carregarProdutos(void)
     fclose(f);
 }
 
-/* ---------- Vendas (cabeçalho) ---------- */
+/* ---------- Vendas (cabecalho) ---------- */
 
 /*
- * Salva cabeçalhos de vendas em "vendas.txt" em formato de tabela.
+ * Salva cabecalhos de vendas em "vendas.txt" em formato de tabela.
  * Inclui, antes da tabela: totalVendas, numeroVendaAtual, faturamento.
  * Colunas: NUMERO | COD. CLIENTE | NOME CLIENTE | DATA | TOTAL
  */
@@ -2338,7 +2502,7 @@ void salvarVendas(void)
 }
 
 /*
- * Carrega cabeçalhos de vendas de "vendas.txt".
+ * Carrega cabecalhos de vendas de "vendas.txt".
  */
 void carregarVendas(void)
 {
@@ -2794,6 +2958,7 @@ void carregarTudo(void)
 {
     carregarUsuarios();
     carregarClientes();
+    carregarCategorias();
     carregarProdutos();
     carregarVendas();
     carregarItens();
@@ -2805,6 +2970,7 @@ void salvarTudo(void)
 {
     salvarUsuarios();
     salvarClientes();
+    salvarCategorias();
     salvarProdutos();
     salvarVendas();
     salvarItens();
